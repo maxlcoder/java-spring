@@ -1,10 +1,14 @@
-package pers.maxlcoder.demo;
+package pers.maxlcoder.demo.service;
 
 public class User {
+
     private long id;
     private String email;
     private String password;
     private String name;
+
+    public User() {
+    }
 
     public User(long id, String email, String password, String name) {
         this.id = id;
@@ -43,5 +47,11 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("User[id=%s, email=%s, name=%s, password=%s]", this.id, this.email, this.name,
+                this.password);
     }
 }

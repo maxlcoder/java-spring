@@ -9,6 +9,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.*;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.TransactionManager;
+import pers.maxlcoder.demo.service.UserService;
 
 import javax.sql.DataSource;
 import java.time.ZoneId;
@@ -33,6 +36,11 @@ public class AppConfig {
     @Bean
     JdbcTemplate createJdbcTemplate(@Autowired DataSource dataSource) {
         return new JdbcTemplate(dataSource);
+    }
+
+    @Bean
+    TransactionManager createTxManager(@Autowired DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
     }
 
     @Bean
@@ -70,10 +78,12 @@ public class AppConfig {
     public static void main(String[] args) {
         ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
         UserService userService = context.getBean(UserService.class);
-        User user = userService.register("bofb@example.com", "password1", "Bob1");
-        User bob = userService.getUserByName("Bob1");
-        System.out.println(bob);
-        System.out.println(bob.getName());
+        // 插入Root:
+        try {
+            userService.register("root@example.com", "password3", "root");
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
+        }
         ((ConfigurableApplicationContext) context).close();
     }
 }
