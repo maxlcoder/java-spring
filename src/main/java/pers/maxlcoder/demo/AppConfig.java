@@ -1,27 +1,47 @@
 package pers.maxlcoder.demo;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionManager;
-import pers.maxlcoder.demo.service.UserService;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.sql.DataSource;
-import java.time.ZoneId;
+import pers.maxlcoder.demo.service.User;
+import pers.maxlcoder.demo.service.UserService;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
 @ComponentScan
-@PropertySource("application.properties")
+@EnableTransactionManagement
 @PropertySource("jdbc.properties")
-@EnableAspectJAutoProxy
 public class AppConfig {
+
+    public static void main(String[] args) {
+        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+        UserService userService = context.getBean(UserService.class);
+        // 插入Root:
+        try {
+            userService.register("root@example.com", "password3", "fdsfds");
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
+        }
+        // 查询所有用户:
+        for (User u : userService.getUsers(1)) {
+            System.out.println(u);
+        }
+        ((ConfigurableApplicationContext) context).close();
+    }
 
     @Value("${jdbc.url}")
     String jdbcUrl;
@@ -32,6 +52,17 @@ public class AppConfig {
     @Value("${jdbc.password}")
     String jdbcPassword;
 
+    @Bean
+    DataSource createDataSource() {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(jdbcUrl);
+        config.setUsername(jdbcUsername);
+        config.setPassword(jdbcPassword);
+        config.addDataSourceProperty("autoCommit", "false");
+        config.addDataSourceProperty("connectionTimeout", "5");
+        config.addDataSourceProperty("idleTimeout", "60");
+        return new HikariDataSource(config);
+    }
 
     @Bean
     JdbcTemplate createJdbcTemplate(@Autowired DataSource dataSource) {
@@ -41,49 +72,5 @@ public class AppConfig {
     @Bean
     TransactionManager createTxManager(@Autowired DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
-    }
-
-    @Bean
-    DataSource createDataSource() {
-        HikariConfig config = new HikariConfig();
-        config.setJdbcUrl(jdbcUrl);
-        config.setUsername(jdbcUsername);
-        config.setPassword(jdbcPassword);
-        config.addDataSourceProperty("autoCommit", "true");
-        config.addDataSourceProperty("connectionTimeout", "5");
-        config.addDataSourceProperty("idleTimeout", "60");
-        return new HikariDataSource(config);
-    }
-
-
-//    @Value("${test:helo}")
-//    String test;
-//
-//    @Bean("hello")
-//    String createHello() {
-//        return test;
-//    }
-//
-//    @Bean("z")
-//    ZoneId createZoneOfZ() {
-//        return ZoneId.of("Z");
-//    }
-//
-//    @Bean
-//    @Qualifier("utc8")
-//    ZoneId createZoneOfUTC8() {
-//        return ZoneId.of("UTC+08:00");
-//    }
-
-    public static void main(String[] args) {
-        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-        UserService userService = context.getBean(UserService.class);
-        // 插入Root:
-        try {
-            userService.register("root@example.com", "password3", "root");
-        } catch (RuntimeException e) {
-            System.out.println(e.getMessage());
-        }
-        ((ConfigurableApplicationContext) context).close();
     }
 }

@@ -13,7 +13,7 @@ import pers.maxlcoder.demo.service.User;
 
 @Component
 @Transactional
-public class UserDao extends AbstractDao {
+public class UserDao extends AbstractDao<User> {
 
     public User fetchUserByEmail(String email) {
         List<User> users = getJdbcTemplate().query("SELECT * FROM users WHERE email = ?", new Object[] { email },

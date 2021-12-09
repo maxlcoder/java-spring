@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
-import pers.maxlcoder.demo.service.User;
 
 public abstract class AbstractDao<T> extends JdbcDaoSupport {
 
@@ -33,7 +32,7 @@ public abstract class AbstractDao<T> extends JdbcDaoSupport {
         super.setJdbcTemplate(jdbcTemplate);
     }
 
-    public User getById(long id) {
+    public T getById(long id) {
         return getJdbcTemplate().queryForObject("SELECT * FROM " + table + " WHERE id = ?", this.rowMapper, id);
     }
 
