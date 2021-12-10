@@ -23,6 +23,7 @@ public abstract class AbstractDao<T> extends JdbcDaoSupport {
 
     public AbstractDao() {
         this.entityClass = getParameterizedType();
+        System.out.println(this.entityClass);
         this.table = this.entityClass.getSimpleName().toLowerCase() + "s";
         this.rowMapper = new BeanPropertyRowMapper<>(entityClass);
     }

@@ -17,6 +17,7 @@ import org.springframework.transaction.TransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import pers.maxlcoder.demo.service.User;
+import pers.maxlcoder.demo.service.UserJdbc;
 import pers.maxlcoder.demo.service.UserService;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -30,6 +31,10 @@ public class AppConfig {
     public static void main(String[] args) {
         ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
         UserService userService = context.getBean(UserService.class);
+        UserJdbc userJdbc = context.getBean(UserJdbc.class);
+        // jdbc
+//        User user = userJdbc.getUserById(1);
+//        System.out.println(user);
         // 插入Root:
         try {
             userService.register("root@example.com", "password3", "fdsfds");

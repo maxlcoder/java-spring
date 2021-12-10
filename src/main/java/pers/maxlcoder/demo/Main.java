@@ -2,10 +2,7 @@ package pers.maxlcoder.demo;
 
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.*;
 import org.springframework.stereotype.Component;
 import pers.maxlcoder.demo.service.A;
 import pers.maxlcoder.demo.service.B;
@@ -13,6 +10,7 @@ import pers.maxlcoder.demo.service.B;
 
 @Configuration
 @ComponentScan
+@EnableAspectJAutoProxy
 public class Main {
 
     public static void main(String[] args) {
@@ -29,11 +27,21 @@ public class Main {
 
         // 可以看到整个调用过程，创建 IoC 容器，Ioc 容器来实例化类
         ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-        C cService = context.getBean(C.class, new Object[] {"ggg"});
-        String cName = cService.getName();
-        System.out.println(cName);
+        A aService = context.getBean(A.class, new Object[] {"ggg"});
+        String aName = aService.getNameOfAFromB();
+        System.out.println(aName);
+        String hel = context.getBean(String.class);
+        System.out.println(hel);
+
+
 
     }
+
+    @Bean
+    String createHello() {
+        return "hello";
+    }
+
 }
 
 @Component
@@ -49,3 +57,5 @@ class C {
         return name;
     }
 }
+
+

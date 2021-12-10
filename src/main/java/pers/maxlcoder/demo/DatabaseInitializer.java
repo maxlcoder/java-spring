@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 
 @Component
 public class DatabaseInitializer {
+
     @Autowired
     JdbcTemplate jdbcTemplate;
 

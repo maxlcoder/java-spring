@@ -49,3 +49,112 @@ class C {
     }
 }
 ```
+
+上面演示的是一次性创建所有的 Bean ，Bean 的创建还可以延迟创建，也就是用的时候再创建，这个就需要根据具体的需求了。
+示例展示的通过 getBean 从 IoC 容器中取出 Bean，下面展示通过 @Autowired 注解来注入一个 Bean 。
+
+分别定义两个 Bean
+
+```java
+// 定义被注入Bean
+@Component
+public class MailService() {
+    
+}
+
+// 注入形式一，属性注入
+@Component
+public class UserService {
+    @Autowired(required = false) // 表示 Bean 能找到就注入，找不到就忽略
+    MailService mailService;
+}
+
+// 注入形式二，构造函数注入
+@Component
+public class UserService {
+    
+    MailService mailService;
+
+    public UserService(@Autowired MailService mailService) {
+        this.mailService = mailService;
+    }
+}
+
+```
+
+### Bean List
+
+直接看代码
+
+```java
+@Component
+@Order(1)
+public class OneValidator implements Validator {
+
+}
+
+@Component
+@Order(2)
+public class TwoValidator implements Validator {
+
+}
+
+@Component
+public class Validators {
+    @Autowired
+    List<Validator> validators;
+}
+```
+
+通过 @Order 指定了注入到 List 中的 Bean 顺序，Spring 自动将同类型的 Bean ，注入到 List
+
+## 自定义 Bean
+
+如果 Bean 你不在当前 Package 中管理时，可以通过在 @Configuration 类中定义一个方法返回指定类型的 Bean
+
+```java
+@Configuration
+@ComponentScan
+public class AppConfig {
+    // 创建一个 ZoneId 类型的 Bean，那么其他地方可以直接注入这个 ZoneId Bean，这里是方法返回了具体的对象或者值
+    @Bean
+    ZoneId createZoneId() {
+        return ZoneId.of("Z");
+    }
+}
+```
+
+多个 Bean 会产生异常，因此当多个 Bean 的类型相同时，我们需要給每个 Bean 进行命名，方式
+```java
+@Configuration
+@ComponentScan
+public class AppConfig {
+    @Bean("z")
+    ZoneId createZoneOfZ() {
+        return ZoneId.of("Z");
+    }
+
+    @Bean
+    @Qualifier("utc8")
+    ZoneId createZoneOfUTC8() {
+        return ZoneId.of("UTC+08:00");
+    }
+}
+
+```
+使用如下
+
+```java
+@Component
+public class MailService {
+	@Autowired(required = false)
+	@Qualifier("z") // 指定注入名称为"z"的ZoneId
+	ZoneId zoneId = ZoneId.systemDefault();
+    ...
+}
+```
+
+## AOP
+
+
+
