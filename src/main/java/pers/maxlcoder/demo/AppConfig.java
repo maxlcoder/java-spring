@@ -1,7 +1,11 @@
 package pers.maxlcoder.demo;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import org.hibernate.SessionFactory;
+import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -16,14 +20,15 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.TransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import pers.maxlcoder.demo.service.User;
-import pers.maxlcoder.demo.service.UserJdbc;
+import pers.maxlcoder.demo.entity.User;
 import pers.maxlcoder.demo.service.UserService;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+
 @Configuration
 @ComponentScan
+@MapperScan
 @EnableTransactionManagement
 @PropertySource("jdbc.properties")
 public class AppConfig {
@@ -31,20 +36,16 @@ public class AppConfig {
     public static void main(String[] args) {
         ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
         UserService userService = context.getBean(UserService.class);
-        UserJdbc userJdbc = context.getBean(UserJdbc.class);
         // jdbc
+//        UserJdbc userJdbc = context.getBean(UserJdbc.class);
 //        User user = userJdbc.getUserById(1);
 //        System.out.println(user);
-        // 插入Root:
-        try {
-            userService.register("root@example.com", "password3", "fdsfds");
-        } catch (RuntimeException e) {
-            System.out.println(e.getMessage());
+        if (userService.fetchUserByEmail("bob@example.com") == null) {
+            User bob = userService.register("bob@example.com", "fdsfd", "fdsf");
+            System.out.println("user regiser bob");
         }
-        // 查询所有用户:
-        for (User u : userService.getUsers(1)) {
-            System.out.println(u);
-        }
+        User bob = userService.login("bob@example.com", "fdsfd");
+        System.out.println(bob);
         ((ConfigurableApplicationContext) context).close();
     }
 
@@ -78,4 +79,12 @@ public class AppConfig {
     TransactionManager createTxManager(@Autowired DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
     }
+
+    @Bean
+    SqlSessionFactoryBean createSqlSessionFactoryBean(@Autowired DataSource dataSource) {
+        var sqlSessionFactoryBean = new SqlSessionFactoryBean();
+        sqlSessionFactoryBean.setDataSource(dataSource);
+        return sqlSessionFactoryBean;
+    }
+
 }

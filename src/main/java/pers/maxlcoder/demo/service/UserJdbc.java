@@ -11,12 +11,12 @@ public class UserJdbc {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    public User getUserById(long id) {
+    public UserClass getUserById(long id) {
         return jdbcTemplate.execute("SELECT * FROM users WHERE id = ?", (PreparedStatement ps) -> {
             ps.setObject(1, id);
             try (var rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return new User(
+                    return new UserClass(
                             rs.getLong("id"),
                             rs.getString("email"),
                             rs.getString("password"),

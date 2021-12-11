@@ -3,12 +3,10 @@ package pers.maxlcoder.demo.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
-@Entity
 public class Book extends AbstractEntity {
 
     private String title;
 
-    @Column(nullable = false, length = 100)
     public String getTitle() {
         return title;
     }

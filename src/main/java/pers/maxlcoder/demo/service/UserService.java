@@ -3,7 +3,8 @@ package pers.maxlcoder.demo.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import pers.maxlcoder.demo.dao.UserDao;
+import pers.maxlcoder.demo.entity.User;
+import pers.maxlcoder.demo.mapper.UserMapper;
 
 import java.util.List;
 
@@ -12,40 +13,57 @@ import java.util.List;
 public class UserService {
 
     @Autowired
-    UserDao userDao;
+    UserMapper userMapper;
 
     public User getUserById(long id) {
-        return userDao.getById(id);
+        User user = userMapper.getById(id);
+        if (user == null) {
+            throw new RuntimeException("User not found by id: " + id);
+        }
+        return user;
     }
 
     public User fetchUserByEmail(String email) {
-        return userDao.fetchUserByEmail(email);
+        return userMapper.getByEmail(email);
     }
 
     public User getUserByEmail(String email) {
-        return userDao.getUserByEmail(email);
+        User user = fetchUserByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("User not found by email.");
+        }
+        return user;
     }
 
     public List<User> getUsers(int pageIndex) {
-        return userDao.getAll(pageIndex);
+        int pageSize = 100;
+        return userMapper.getAll((pageIndex - 1) * pageSize, pageSize);
     }
 
     public User login(String email, String password) {
-        User user = fetchUserByEmail(email);
-        if (user != null && user.getPassword().equals(password)) {
+        User user = userMapper.getByEmail(email);
+        if (user != null && password.equals(user.getPassword())) {
             return user;
         }
         throw new RuntimeException("login failed.");
     }
 
     public User register(String email, String password, String name) {
-        if (userDao.fetchUserByEmail(email) != null) {
-            throw new RuntimeException("Email is alreay exist.");
-        }
-        return userDao.createUser(email, password, name);
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
+        user.setName(name);
+        userMapper.insert(user);
+        return user;
     }
 
-    public void updateUser(User user) {
-        userDao.updateUser(user);
+    public void updateUser(Long id, String name) {
+        User user = getUserById(id);
+        user.setName(name);
+        userMapper.update(user);
+    }
+
+    public void deleteUser(Long id) {
+        userMapper.deleteById(id);
     }
 }

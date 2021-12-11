@@ -1,16 +1,16 @@
 package pers.maxlcoder.demo.service;
 
-public class User {
+public class UserClass {
 
     private long id;
     private String email;
     private String password;
     private String name;
 
-    public User() {
+    public UserClass() {
     }
 
-    public User(long id, String email, String password, String name) {
+    public UserClass(long id, String email, String password, String name) {
         this.id = id;
         this.email = email;
         this.password = password;

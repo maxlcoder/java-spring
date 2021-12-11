@@ -9,16 +9,16 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import pers.maxlcoder.demo.service.User;
+import pers.maxlcoder.demo.service.UserClass;
 
 @Component
 @Transactional
-public class UserDao extends AbstractDao<User> {
+public class UserDao extends AbstractDao<UserClass> {
 
-    public User fetchUserByEmail(String email) {
-        List<User> users = getJdbcTemplate().query("SELECT * FROM users WHERE email = ?", new Object[] { email },
+    public UserClass fetchUserByEmail(String email) {
+        List<UserClass> users = getJdbcTemplate().query("SELECT * FROM users WHERE email = ?", new Object[] { email },
                 (ResultSet rs, int rowNum) -> {
-                    return new User( // new User object:
+                    return new UserClass( // new User object:
                             rs.getLong("id"), // id
                             rs.getString("email"), // email
                             rs.getString("password"), // password
@@ -27,10 +27,10 @@ public class UserDao extends AbstractDao<User> {
         return users.isEmpty() ? null : users.get(0);
     }
 
-    public User getUserByEmail(String email) {
+    public UserClass getUserByEmail(String email) {
         return getJdbcTemplate().queryForObject("SELECT * FROM users WHERE email = ?", new Object[] { email },
                 (ResultSet rs, int rowNum) -> {
-                    return new User( // new User object:
+                    return new UserClass( // new User object:
                             rs.getLong("id"), // id
                             rs.getString("email"), // email
                             rs.getString("password"), // password
@@ -38,15 +38,15 @@ public class UserDao extends AbstractDao<User> {
                 });
     }
 
-    public User login(String email, String password) {
-        User user = getUserByEmail(email);
+    public UserClass login(String email, String password) {
+        UserClass user = getUserByEmail(email);
         if (user.getPassword().equals(password)) {
             return user;
         }
         throw new RuntimeException("login failed.");
     }
 
-    public User createUser(String email, String password, String name) {
+    public UserClass createUser(String email, String password, String name) {
         KeyHolder holder = new GeneratedKeyHolder();
         if (1 != getJdbcTemplate().update((conn) -> {
             var ps = conn.prepareStatement("INSERT INTO users(email, password, name) VALUES(?,?,?)",
@@ -61,10 +61,10 @@ public class UserDao extends AbstractDao<User> {
         if ("root".equalsIgnoreCase(name)) {
             throw new RuntimeException("Invalid name, will rollback...");
         }
-        return new User(holder.getKey().longValue(), email, password, name);
+        return new UserClass(holder.getKey().longValue(), email, password, name);
     }
 
-    public void updateUser(User user) {
+    public void updateUser(UserClass user) {
         if (1 != getJdbcTemplate().update("UPDATE user SET name = ? WHERE id=?", user.getName(), user.getId())) {
             throw new RuntimeException("User not found by id");
         }
