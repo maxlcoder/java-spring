@@ -5,8 +5,9 @@
 
 ## 前言
 
-本项目主要是记录学习 java 开发过程中的开发笔记和部分功能理解，学习内容参照[廖雪峰Java教程](https://www.liaoxuefeng.com/wiki/1252599548343744)。
-期间还会阅读其他的Java相关知识，比如 JVM 模型，内存调优等等。有利于加深对 Java 与其体系的理解。
+本项目主要是记录学习 java 开发过程中的开发笔记和部分功能理解。
+期间还会阅读其他的Java相关知识，比如 JVM 模型，内存调优等等。
+有利于加深对 Java 与其体系的理解。
 
 ## IoC 容器 和 Bean 初步
 
@@ -92,7 +93,7 @@ public class UserService {
 
 ```
 
-### Bean List
+## Bean List
 
 直接看代码
 
