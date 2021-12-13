@@ -9,6 +9,10 @@
 期间还会阅读其他的Java相关知识，比如 JVM 模型，内存调优等等。
 有利于加深对 Java 与其体系的理解。
 
+## 目录结构
+
+demo: 主要是涉及 IoC 容器，Bean ， AOP 和 数据库相关（JDBC，DAO，Hibernate ，JPA，MyBatis ）
+
 ## IoC 容器 和 Bean 初步
 
 Bean 的定义有多种目前集中表现为
